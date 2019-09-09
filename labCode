@@ -1,0 +1,49 @@
+import numpy as np
+ 
+n = np.arange(1,int(input('Size of Network: '))+1)      #user input, network size
+
+c = np.empty((n.size,n.size))                           #init nxn matrix
+for i in range(n.size):                             
+    msg = ('Enter Cost Row %d'
+           ' separated by spaces.'
+           '(Ex: 3 inf 17): ' % (i+1))
+    c[i] = np.asarray(                                  #fill init cost matrix
+        list(map(float,input(msg).split())))            #user input
+
+in_tree = np.array([int(input('Source Number: '))])     #init in tree array
+
+while True:
+    not_in_tree = np.setdiff1d(n,in_tree)               #init not in tree array
+    
+    mst = np.zeros((n.size-1,3))                        #init min spanning tree
+    row = 0                                             #init row index
+    
+    while True:
+    
+        cost = np.inf                                   #init edge cost
+        
+        for i in range(in_tree.size):                   #loop for in tree (j)
+            for i2 in range(not_in_tree.size):          #loop for not in tree (k)
+                x = c[in_tree[i]-1,not_in_tree[i2]-1]   #edge cost between j and k
+                if cost > x:                            #if old edge cost greater
+                    cost = x                            #update w/lesser cost x
+                    j = i                               #edge end in tree
+                    k = i2                              #edge end not in tree
+    
+        mst[row,:] = [in_tree[j], not_in_tree[k], cost] #update min spannig tree 
+        row += 1                                        #update row index
+                    
+        in_tree = np.append(not_in_tree[k],in_tree)     #update nodes in tree
+        not_in_tree = np.setdiff1d(n,in_tree)           #update nodes not in tree
+           
+        if not_in_tree.size == 0:                       #end loop when all elements
+            break                                       #not in tree exhausted
+        
+    print(mst)
+    
+    close = input("Select New Source(1)? or Exit(2):")  #select new source or exit
+    
+    if close == '2':                                    #end loop, exit program
+        break
+    
+    in_tree = np.array([int(input('Source Number: '))]) #input new source
